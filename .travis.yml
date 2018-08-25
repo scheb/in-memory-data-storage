@@ -1,0 +1,34 @@
+language: php
+
+php:
+  - 7.1
+  - 7.2
+  - nightly
+
+sudo: false
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 7.1
+      env: COMPOSER_FLAGS="--prefer-lowest"
+  allow_failures:
+    - php: nightly
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+before_install:
+  - composer selfupdate
+
+install:
+  - composer update --prefer-dist --no-interaction $COMPOSER_FLAGS
+
+script:
+  - mkdir -p build/logs
+  - ./bin/phpunit --coverage-clover build/logs/clover.xml
+
+after_script:
+ - wget https://scrutinizer-ci.com/ocular.phar
+ - php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml
