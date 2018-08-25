@@ -1,0 +1,33 @@
+{
+    "name": "scheb/in-memory-data-storage",
+    "type": "symfony-bundle",
+    "description": "A simple in-memory data storage",
+    "keywords": ["data storage", "data repository", "crud", "in-memory", "mock", "testing"],
+    "homepage": "https://github.com/scheb/in-memory-data-storage",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Scheb",
+            "email": "me@christianscheb.de"
+        }
+    ],
+    "require": {
+        "php": "^7.1.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Scheb\\InMemoryDataStorage\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Scheb\\InMemoryDataStorage\\Test\\": "tests/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin"
+    }
+}
