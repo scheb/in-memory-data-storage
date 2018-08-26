@@ -46,7 +46,7 @@ class DataRepository
         return $this->dataStorage->containsItem($item);
     }
 
-    public function getAllItems()
+    public function getAllItems(): array
     {
         return $this->dataStorage->getAllItems();
     }
