@@ -8,6 +8,10 @@ use Scheb\InMemoryDataStorage\Exception\NamedItemNotFoundException;
 
 class DataRepository
 {
+    public const OPTION_STRICT_GET = 1;
+    public const OPTION_STRICT_UPDATE = 2;
+    public const OPTION_STRICT_REMOVE = 4;
+
     /**
      * @var DataStorageInterface
      */
@@ -26,14 +30,19 @@ class DataRepository
     /**
      * @var bool
      */
-    private $strictDelete;
+    private $strictRemove;
 
-    public function __construct(DataStorageInterface $dataStorage, array $options = [])
+    public function __construct(DataStorageInterface $dataStorage, int $options = 0)
     {
         $this->dataStorage = $dataStorage;
-        $this->strictGet = $options['strictGet'] ?? true;
-        $this->strictUpdate = $options['strictUpdate'] ?? true;
-        $this->strictDelete = $options['strictDelete'] ?? true;
+        $this->setOptions($options);
+    }
+
+    public function setOptions(int $options): void
+    {
+        $this->strictGet = $options & self::OPTION_STRICT_GET;
+        $this->strictUpdate = $options & self::OPTION_STRICT_UPDATE;
+        $this->strictRemove = $options & self::OPTION_STRICT_REMOVE;
     }
 
     public function addItem($item): void
@@ -53,7 +62,7 @@ class DataRepository
 
     public function removeItem($item): void
     {
-        if ($this->strictDelete && !$this->dataStorage->containsItem($item)) {
+        if ($this->strictRemove && !$this->dataStorage->containsItem($item)) {
             throw ItemNotFoundException::createItemNotFoundException($item);
         }
 
@@ -90,7 +99,7 @@ class DataRepository
 
     public function removeNamedItem(string $name): void
     {
-        if ($this->strictDelete && !$this->dataStorage->namedItemExists($name)) {
+        if ($this->strictRemove && !$this->dataStorage->namedItemExists($name)) {
             throw NamedItemNotFoundException::createNamedItemNotFoundException($name);
         }
 
