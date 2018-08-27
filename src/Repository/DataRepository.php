@@ -69,7 +69,7 @@ class DataRepository
         $this->dataStorage->removeItem($item);
     }
 
-    public function addNamedItem(string $name, $item): void
+    public function setNamedItem(string $name, $item): void
     {
         $this->dataStorage->setNamedItem($name, $item);
     }

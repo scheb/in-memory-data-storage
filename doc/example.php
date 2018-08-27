@@ -14,7 +14,7 @@ $repository->getAllItems(); // returns [$foo]
 $repository->removeItem($foo);
 
 // Named items
-$repository->addNamedItem('foo', $foo);
+$repository->setNamedItem('foo', $foo);
 $repository->namedItemExists('foo'); // returns true
 $repository->getNamedItem('foo'); // returns $foo
 $repository->replaceNamedItem('foo', $bar);
