@@ -1,5 +1,6 @@
 <?php
-require(__DIR__ . '/../vendor/autoload.php');
+
+require __DIR__.'/../vendor/autoload.php';
 
 $foo = 'I am foo';
 $bar = 'I am bar';
