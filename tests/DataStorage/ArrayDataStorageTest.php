@@ -88,54 +88,12 @@ class ArrayDataStorageTest extends TestCase
     /**
      * @test
      */
-    public function removeItem_itemInDataStorage_returnTrue(): void
-    {
-        $item = new \stdClass();
-        $this->dataStorage->addItem($item);
-        $this->assertTrue($this->dataStorage->removeItem($item));
-    }
-
-    /**
-     * @test
-     */
-    public function removeItem_notInDataStorage_returnFalse(): void
-    {
-        $item1 = new \stdClass();
-        $item2 = new \stdClass();
-        $this->dataStorage->addItem($item1);
-        $this->assertFalse($this->dataStorage->removeItem($item2));
-    }
-
-    /**
-     * @test
-     */
     public function removeItem_removeNamedItem_itemRemovedFromDataStorage(): void
     {
         $item = new \stdClass();
         $this->dataStorage->setNamedItem('test', $item);
         $this->dataStorage->removeItem($item);
         $this->assertCount(0, $this->dataStorage->getAllItems(), 'Data storage must be empty.');
-    }
-
-    /**
-     * @test
-     */
-    public function removeItem_namedItemInDataStorage_returnTrue(): void
-    {
-        $item = new \stdClass();
-        $this->dataStorage->setNamedItem('test', $item);
-        $this->assertTrue($this->dataStorage->removeItem($item));
-    }
-
-    /**
-     * @test
-     */
-    public function removeItem_namedItemInDataStorage_returnFalse(): void
-    {
-        $item1 = new \stdClass();
-        $item2 = new \stdClass();
-        $this->dataStorage->setNamedItem('test', $item1);
-        $this->assertFalse($this->dataStorage->removeItem($item2));
     }
 
     /**
@@ -224,25 +182,5 @@ class ArrayDataStorageTest extends TestCase
         $this->dataStorage->setNamedItem('test', $item);
         $this->dataStorage->removeNamedItem('test');
         $this->assertCount(0, $this->dataStorage->getAllItems(), 'Data storage must be empty.');
-    }
-
-    /**
-     * @test
-     */
-    public function removeNamedItem_namedItemExists_returnTrue(): void
-    {
-        $item = new \stdClass();
-        $this->dataStorage->setNamedItem('test', $item);
-        $this->assertTrue($this->dataStorage->removeNamedItem('test'));
-    }
-
-    /**
-     * @test
-     */
-    public function removeNamedItem_namedItemNotExists_returnFalse(): void
-    {
-        $item = new \stdClass();
-        $this->dataStorage->setNamedItem('test', $item);
-        $this->assertFalse($this->dataStorage->removeNamedItem('otherName'));
     }
 }

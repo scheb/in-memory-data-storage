@@ -24,10 +24,8 @@ interface DataStorageInterface
      * Remove a specific item from the data storage.
      *
      * @param mixed $item
-     *
-     * @return bool True when the item was removed, false when the item could not be removed (e.g. not in the list)
      */
-    public function removeItem($item): bool;
+    public function removeItem($item): void;
 
     /**
      * Return all items form the data storage.
@@ -66,8 +64,6 @@ interface DataStorageInterface
      * Remove a named item from the data storage.
      *
      * @param string $name
-     *
-     * @return bool True when the item was removed, false when the item could not be removed (e.g. not in the list)
      */
-    public function removeNamedItem(string $name): bool;
+    public function removeNamedItem(string $name): void;
 }

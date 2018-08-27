@@ -16,16 +16,12 @@ class ArrayDataStorage implements DataStorageInterface
         return in_array($item, $this->items, true);
     }
 
-    public function removeItem($item): bool
+    public function removeItem($item): void
     {
         $key = array_search($item, $this->items, true);
-        if (false === $key) {
-            return false;
+        if (false !== $key) {
+            unset($this->items[$key]);
         }
-
-        unset($this->items[$key]);
-
-        return true;
     }
 
     public function getAllItems(): array
@@ -52,14 +48,8 @@ class ArrayDataStorage implements DataStorageInterface
         return isset($this->items[$name]);
     }
 
-    public function removeNamedItem(string $name): bool
+    public function removeNamedItem(string $name): void
     {
-        if (!$this->namedItemExists($name)) {
-            return false;
-        }
-
         unset($this->items[$name]);
-
-        return true;
     }
 }
