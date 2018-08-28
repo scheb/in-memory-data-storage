@@ -12,7 +12,7 @@ class EqualsMatchingStrategyTest extends TestCase
      */
     private $matchingStrategy;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->matchingStrategy = new EqualsMatchingStrategy();
     }

@@ -12,7 +12,7 @@ class ArrayDataStorageTest extends TestCase
      */
     private $dataStorage;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->dataStorage = new ArrayDataStorage();
     }

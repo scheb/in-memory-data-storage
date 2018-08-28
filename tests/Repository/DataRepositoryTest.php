@@ -25,7 +25,7 @@ class DataRepositoryTest extends TestCase
      */
     private $testItem;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->dataStorage = $this->createMock(DataStorageInterface::class);
         $this->dataRepository = new DataRepository($this->dataStorage);

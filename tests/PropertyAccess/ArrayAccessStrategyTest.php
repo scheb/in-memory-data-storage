@@ -11,7 +11,7 @@ class ArrayAccessStrategyTest extends TestCase
      */
     private $accessStrategy;
 
-    public function setUp()
+    protected function setUp()
     {
         $this->accessStrategy = new ArrayAccessStrategy();
     }
