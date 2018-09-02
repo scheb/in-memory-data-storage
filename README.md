@@ -32,8 +32,10 @@ How to use
 You can find an executable example in the `doc` folder.
 
 ```php
-$storage = new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage();
-$repository = new \Scheb\InMemoryDataStorage\DataRepository($storage);
+$repositoryBuilder = new \Scheb\InMemoryDataStorage\DataRepositoryBuilder();
+$repository = $repositoryBuilder
+//  ->setDataStorage(new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage())
+    ->getDataRepository();
 
 // Simple CRUD
 $repository->addItem($foo);
@@ -49,7 +51,6 @@ $repository->replaceNamedItem('foo', $bar);
 $repository->getNamedItem('foo'); // returns $bar
 $repository->removeNamedItem('foo');
 ```
-
 
 How to extend
 -------------

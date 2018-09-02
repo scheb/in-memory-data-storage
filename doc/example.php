@@ -5,8 +5,10 @@ require __DIR__.'/../vendor/autoload.php';
 $foo = 'I am foo';
 $bar = 'I am bar';
 
-$storage = new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage();
-$repository = new \Scheb\InMemoryDataStorage\DataRepository($storage);
+$repositoryBuilder = new \Scheb\InMemoryDataStorage\DataRepositoryBuilder();
+$repository = $repositoryBuilder
+//  ->setDataStorage(new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage())
+    ->getDataRepository();
 
 // Simple CRUD
 $repository->addItem($foo);
