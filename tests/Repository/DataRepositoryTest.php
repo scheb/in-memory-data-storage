@@ -2,18 +2,25 @@
 
 namespace Scheb\InMemoryDataStorage\Test\Repository;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use Scheb\InMemoryDataStorage\DataRepository;
 use Scheb\InMemoryDataStorage\DataStorage\DataStorageInterface;
-use Scheb\InMemoryDataStorage\Exception\NamedItemNotFoundException;
-use Scheb\InMemoryDataStorage\Repository\DataRepository;
-use Scheb\InMemoryDataStorage\Test\TestCase;
 use Scheb\InMemoryDataStorage\Exception\ItemNotFoundException;
+use Scheb\InMemoryDataStorage\Exception\NamedItemNotFoundException;
+use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperatorInterface;
+use Scheb\InMemoryDataStorage\Test\TestCase;
 
 class DataRepositoryTest extends TestCase
 {
     /**
-     * @var DataStorageInterface
+     * @var MockObject|DataStorageInterface
      */
     private $dataStorage;
+
+    /**
+     * @var MockObject|PropertyOperatorInterface
+     */
+    private $propertyOperator;
 
     /**
      * @var DataRepository
@@ -28,7 +35,8 @@ class DataRepositoryTest extends TestCase
     protected function setUp()
     {
         $this->dataStorage = $this->createMock(DataStorageInterface::class);
-        $this->dataRepository = new DataRepository($this->dataStorage);
+        $this->propertyOperator = $this->createMock(PropertyOperatorInterface::class);
+        $this->dataRepository = new \Scheb\InMemoryDataStorage\DataRepository($this->dataStorage, $this->propertyOperator);
         $this->testItem = new \stdClass();
     }
 
@@ -44,7 +52,7 @@ class DataRepositoryTest extends TestCase
 
     private function configureRepositoryStrictRemove(): void
     {
-        $this->dataRepository->setOptions(DataRepository::OPTION_STRICT_REMOVE);
+        $this->dataRepository->setOptions(\Scheb\InMemoryDataStorage\DataRepository::OPTION_STRICT_REMOVE);
     }
 
     private function stubGetAllItemsReturns(array $returnValue): void

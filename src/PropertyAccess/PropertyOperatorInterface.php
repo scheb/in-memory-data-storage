@@ -2,17 +2,8 @@
 
 namespace Scheb\InMemoryDataStorage\PropertyAccess;
 
-interface PropertyAccessStrategyInterface
+interface PropertyOperatorInterface
 {
-    /**
-     * If the strategy supports a specific kind of valueObject.
-     *
-     * @param mixed $valueObject
-     *
-     * @return bool
-     */
-    public function supports($valueObject): bool;
-
     /**
      * Get a property from an item.
      *
@@ -30,7 +21,17 @@ interface PropertyAccessStrategyInterface
      * @param string $propertyName
      * @param mixed  $value
      *
-     * @return bool if the strategy was able to set the value
+     * @return mixed The modified object
      */
-    public function setPropertyValue(&$valueObject, string $propertyName, $value): bool;
+    public function setPropertyValue($valueObject, string $propertyName, $value);
+
+    /**
+     * Return an iterator with all items matching the criteria.
+     *
+     * @param array $items
+     * @param array $criteria
+     *
+     * @return \Traversable
+     */
+    public function getItemsWithMatchingCriteria(array $items, array $criteria): \Traversable;
 }

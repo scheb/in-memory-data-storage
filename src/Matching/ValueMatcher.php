@@ -2,35 +2,22 @@
 
 namespace Scheb\InMemoryDataStorage\Matching;
 
+use Scheb\Comparator\ComparatorInterface;
+
 class ValueMatcher implements ValueMatcherInterface
 {
     /**
-     * @var array
+     * @var ComparatorInterface
      */
-    private $matchingStrategies;
+    private $comparator;
 
-    /**
-     * @param bool                             $useTypeSensitiveOperator if the equals (==) or type-sensitive (===) operation should be used
-     * @param ValueMatchingStrategyInterface[] $customMatchingStrategies
-     */
-    public function __construct(bool $useTypeSensitiveOperator = true, array $customMatchingStrategies = [])
+    public function __construct(ComparatorInterface $comparator)
     {
-        $this->matchingStrategies = $customMatchingStrategies;
-        if ($useTypeSensitiveOperator) {
-            $this->matchingStrategies[] = new TypeSensitiveEqualsMatchingStrategy();
-        } else {
-            $this->matchingStrategies[] = new EqualsMatchingStrategy();
-        }
+        $this->comparator = $comparator;
     }
 
     public function match($value1, $value2): bool
     {
-        foreach ($this->matchingStrategies as $matchingStrategy) {
-            if ($matchingStrategy->match($value1, $value2)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->comparator->isEqual($value1, $value2);
     }
 }
