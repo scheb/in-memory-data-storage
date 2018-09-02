@@ -33,7 +33,7 @@ You can find an executable example in the `doc` folder.
 
 ```php
 $storage = new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage();
-$repository = new \Scheb\InMemoryDataStorage\Repository\DataRepository($storage);
+$repository = new \Scheb\InMemoryDataStorage\DataRepository($storage);
 
 // Simple CRUD
 $repository->addItem($foo);

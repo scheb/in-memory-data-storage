@@ -6,7 +6,7 @@ $foo = 'I am foo';
 $bar = 'I am bar';
 
 $storage = new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage();
-$repository = new \Scheb\InMemoryDataStorage\Repository\DataRepository($storage);
+$repository = new \Scheb\InMemoryDataStorage\DataRepository($storage);
 
 // Simple CRUD
 $repository->addItem($foo);

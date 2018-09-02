@@ -1,10 +1,12 @@
 <?php
 
-namespace Scheb\InMemoryDataStorage\Repository;
+namespace Scheb\InMemoryDataStorage;
 
 use Scheb\InMemoryDataStorage\DataStorage\DataStorageInterface;
 use Scheb\InMemoryDataStorage\Exception\ItemNotFoundException;
 use Scheb\InMemoryDataStorage\Exception\NamedItemNotFoundException;
+use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperator;
+use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperatorInterface;
 
 class DataRepository
 {
@@ -12,10 +14,18 @@ class DataRepository
     public const OPTION_STRICT_UPDATE = 2;
     public const OPTION_STRICT_REMOVE = 4;
 
+    public const SORT_ORDER_ASC = 1;
+    public const SORT_ORDER_DESC = -1;
+
     /**
      * @var DataStorageInterface
      */
     private $dataStorage;
+
+    /**
+     * @var PropertyOperator
+     */
+    private $propertyOperator;
 
     /**
      * @var bool
@@ -32,9 +42,10 @@ class DataRepository
      */
     private $strictRemove;
 
-    public function __construct(DataStorageInterface $dataStorage, int $options = 0)
+    public function __construct(DataStorageInterface $dataStorage, PropertyOperatorInterface $propertyOperator, int $options = 0)
     {
         $this->dataStorage = $dataStorage;
+        $this->propertyOperator = $propertyOperator;
         $this->setOptions($options);
     }
 
@@ -55,9 +66,14 @@ class DataRepository
         return $this->dataStorage->containsItem($item);
     }
 
-    public function getAllItems(): array
+    public function getAllItems(int $offset = 0, ?int $limit = null): array
     {
-        return $this->dataStorage->getAllItems();
+        return $this->sliceItems($this->dataStorage->getAllItems(), $offset, $limit);
+    }
+
+    public function sliceItems(array $items, int $offset = 0, ?int $limit = null): array
+    {
+        return array_slice($items, $offset, $limit);
     }
 
     public function removeItem($item): void
