@@ -22,7 +22,8 @@
     "autoload": {
         "psr-4": {
             "Scheb\\InMemoryDataStorage\\": "src/"
-        }
+        },
+        "files": ["src/compareFunction.php"]
     },
     "autoload-dev": {
         "psr-4": {
