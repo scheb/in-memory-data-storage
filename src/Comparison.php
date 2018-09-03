@@ -137,11 +137,11 @@ class Comparison
         };
     }
 
-    public static function inArray(array $givenValues): callable
+    public static function isInArray(array $referenceValues): callable
     {
-        return function ($propertyValue, ValueMatcherInterface $valueMatcher) use ($givenValues) {
-            foreach ($givenValues as $givenValue) {
-                if ($valueMatcher->match($propertyValue, $givenValue)) {
+        return function ($propertyValue, ValueMatcherInterface $valueMatcher) use ($referenceValues) {
+            foreach ($referenceValues as $referenceValue) {
+                if ($valueMatcher->match($propertyValue, $referenceValue)) {
                     return true;
                 }
             }
@@ -150,7 +150,7 @@ class Comparison
         };
     }
 
-    public function arrayElementEquals($referenceValue)
+    public static function arrayContains($referenceValue)
     {
         return function ($propertyValue, ValueMatcherInterface $valueMatcher) use ($referenceValue) {
             if (is_iterable($propertyValue)) {
