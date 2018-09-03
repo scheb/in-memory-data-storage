@@ -6,6 +6,13 @@ use Scheb\InMemoryDataStorage\Matching\ValueMatcherInterface;
 
 class Comparison
 {
+    public static function isNull(): callable
+    {
+        return function ($propertyValue) {
+            return null === $propertyValue;
+        };
+    }
+
     public static function notNull(): callable
     {
         return function ($propertyValue) {
