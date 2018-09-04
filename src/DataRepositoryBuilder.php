@@ -12,6 +12,9 @@ use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperator;
 use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperatorInterface;
 use Scheb\PropertyAccess\PropertyAccess;
 use Scheb\PropertyAccess\PropertyAccessInterface;
+use Scheb\PropertyAccess\Strategy\ArrayAccessStrategy;
+use Scheb\PropertyAccess\Strategy\ObjectGetterSetterAccessStrategy;
+use Scheb\PropertyAccess\Strategy\ObjectPropertyAccessStrategy;
 use Scheb\PropertyAccess\Strategy\PropertyAccessStrategyInterface;
 
 class DataRepositoryBuilder
@@ -56,20 +59,13 @@ class DataRepositoryBuilder
      */
     private $customPropertyAccessStrategies = [];
 
-    public function getDataRepository(): DataRepository
+    public function build(): DataRepository
     {
         return new DataRepository(
-            $this->createDataStorage(),
-            $this->createPropertyOperator(),
+            $this->getDataStorage(),
+            $this->getPropertyOperator(),
             $this->dataRepositoryOptions
         );
-    }
-
-    public function setDataStorage(DataStorageInterface $dataStorage): self
-    {
-        $this->dataStorage = $dataStorage;
-
-        return $this;
     }
 
     public function strictGet(): self
@@ -89,6 +85,13 @@ class DataRepositoryBuilder
     public function strictRemove(): self
     {
         $this->dataRepositoryOptions |= DataRepository::OPTION_STRICT_REMOVE;
+
+        return $this;
+    }
+
+    public function setDataStorage(DataStorageInterface $dataStorage): self
+    {
+        $this->dataStorage = $dataStorage;
 
         return $this;
     }
@@ -128,7 +131,14 @@ class DataRepositoryBuilder
         return $this;
     }
 
-    private function createDataStorage(): DataStorageInterface
+    public function addPropertyAccessStrategy(PropertyAccessStrategyInterface $propertyAccessStrategy): self
+    {
+        $this->customPropertyAccessStrategies[] = $propertyAccessStrategy;
+
+        return $this;
+    }
+
+    private function getDataStorage(): DataStorageInterface
     {
         if ($this->dataStorage) {
             return $this->dataStorage;
@@ -137,16 +147,16 @@ class DataRepositoryBuilder
         return new ArrayDataStorage();
     }
 
-    private function createPropertyOperator(): PropertyOperatorInterface
+    private function getPropertyOperator(): PropertyOperatorInterface
     {
         if ($this->propertyOperator) {
             return $this->propertyOperator;
         }
 
-        return new PropertyOperator($this->createValueMatcher(), $this->createPropertyAccess());
+        return new PropertyOperator($this->getValueMatcher(), $this->getPropertyAccess());
     }
 
-    private function createValueMatcher(): ValueMatcherInterface
+    private function getValueMatcher(): ValueMatcherInterface
     {
         if ($this->valueMatcher) {
             return $this->valueMatcher;
@@ -157,12 +167,18 @@ class DataRepositoryBuilder
         return new ValueMatcher($comparator);
     }
 
-    private function createPropertyAccess(): PropertyAccessInterface
+    private function getPropertyAccess(): PropertyAccessInterface
     {
         if ($this->propertyAccess) {
             return $this->propertyAccess;
         }
 
-        return new PropertyAccess($this->customPropertyAccessStrategies);
+        $defaultPropertyAccessStrategies = [
+            new ArrayAccessStrategy(),
+            new ObjectPropertyAccessStrategy(),
+            new ObjectGetterSetterAccessStrategy(),
+        ];
+
+        return new PropertyAccess(array_merge($this->customPropertyAccessStrategies, $defaultPropertyAccessStrategies));
     }
 }

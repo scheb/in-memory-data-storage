@@ -8,7 +8,7 @@ $bar = 'I am bar';
 $repositoryBuilder = new \Scheb\InMemoryDataStorage\DataRepositoryBuilder();
 $repository = $repositoryBuilder
 //  ->setDataStorage(new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage())
-    ->getDataRepository();
+    ->build();
 
 // Simple CRUD
 $repository->addItem($foo);

@@ -35,7 +35,7 @@ You can find an executable example in the `doc` folder.
 $repositoryBuilder = new \Scheb\InMemoryDataStorage\DataRepositoryBuilder();
 $repository = $repositoryBuilder
 //  ->setDataStorage(new \Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage())
-    ->getDataRepository();
+    ->build();
 
 // Simple CRUD
 $repository->addItem($foo);
