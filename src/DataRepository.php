@@ -5,7 +5,6 @@ namespace Scheb\InMemoryDataStorage;
 use Scheb\InMemoryDataStorage\DataStorage\DataStorageInterface;
 use Scheb\InMemoryDataStorage\Exception\ItemNotFoundException;
 use Scheb\InMemoryDataStorage\Exception\NamedItemNotFoundException;
-use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperator;
 use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperatorInterface;
 
 class DataRepository
@@ -23,7 +22,7 @@ class DataRepository
     private $dataStorage;
 
     /**
-     * @var PropertyOperator
+     * @var PropertyOperatorInterface
      */
     private $propertyOperator;
 
