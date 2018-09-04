@@ -24,8 +24,8 @@ class ComparisonTest extends TestCase
         $this->valueMatcher
             ->expects($this->exactly(count($valuePairs)))
             ->method('match')
-            ->withConsecutive(... $valuePairs)
-            ->willReturnOnConsecutiveCalls(... $results);
+            ->withConsecutive(...$valuePairs)
+            ->willReturnOnConsecutiveCalls(...$results);
     }
 
     /**
