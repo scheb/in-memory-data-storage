@@ -50,9 +50,9 @@ class DataRepository
 
     public function setOptions(int $options): void
     {
-        $this->strictGet = $options & self::OPTION_STRICT_GET;
-        $this->strictUpdate = $options & self::OPTION_STRICT_UPDATE;
-        $this->strictRemove = $options & self::OPTION_STRICT_REMOVE;
+        $this->strictGet = (bool) ($options & self::OPTION_STRICT_GET);
+        $this->strictUpdate = (bool) ($options & self::OPTION_STRICT_UPDATE);
+        $this->strictRemove = (bool) ($options & self::OPTION_STRICT_REMOVE);
     }
 
     public function addItem($item): void
