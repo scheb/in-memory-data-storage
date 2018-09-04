@@ -1,6 +1,6 @@
 <?php
 
-namespace Scheb\InMemoryDataStorage\Test\Repository;
+namespace Scheb\InMemoryDataStorage\Test;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use Scheb\InMemoryDataStorage\DataRepository;
@@ -8,7 +8,6 @@ use Scheb\InMemoryDataStorage\DataStorage\DataStorageInterface;
 use Scheb\InMemoryDataStorage\Exception\ItemNotFoundException;
 use Scheb\InMemoryDataStorage\Exception\NamedItemNotFoundException;
 use Scheb\InMemoryDataStorage\PropertyAccess\PropertyOperatorInterface;
-use Scheb\InMemoryDataStorage\Test\TestCase;
 
 class DataRepositoryTest extends TestCase
 {
