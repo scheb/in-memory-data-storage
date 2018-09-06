@@ -29,14 +29,32 @@ class DataRepositoryTest extends TestCase
     /**
      * @var \stdClass
      */
-    private $testItem;
+    private $item1;
+
+    /**
+     * @var \stdClass
+     */
+    private $item2;
+
+    /**
+     * @var \stdClass
+     */
+    private $item3;
+
+    /**
+     * @var array
+     */
+    private $allItems;
 
     protected function setUp()
     {
         $this->dataStorage = $this->createMock(DataStorageInterface::class);
         $this->propertyOperator = $this->createMock(PropertyOperatorInterface::class);
         $this->dataRepository = new \Scheb\InMemoryDataStorage\DataRepository($this->dataStorage, $this->propertyOperator);
-        $this->testItem = new \stdClass();
+        $this->item1 = new \stdClass();
+        $this->item2 = new \stdClass();
+        $this->item3 = new \stdClass();
+        $this->allItems = [$this->item1, $this->item2, $this->item3];
     }
 
     private function configureRepositoryStrictGet(): void
@@ -51,7 +69,7 @@ class DataRepositoryTest extends TestCase
 
     private function configureRepositoryStrictRemove(): void
     {
-        $this->dataRepository->setOptions(\Scheb\InMemoryDataStorage\DataRepository::OPTION_STRICT_REMOVE);
+        $this->dataRepository->setOptions(DataRepository::OPTION_STRICT_REMOVE);
     }
 
     private function stubGetAllItemsReturns(array $returnValue): void
@@ -60,6 +78,11 @@ class DataRepositoryTest extends TestCase
             ->expects($this->any())
             ->method('getAllItems')
             ->willReturn($returnValue);
+    }
+
+    private function stubGetAllItemsReturnsItems123(): void
+    {
+        $this->stubGetAllItemsReturns($this->allItems);
     }
 
     private function stubContainsItemReturns(bool $returnValue): void
@@ -78,6 +101,14 @@ class DataRepositoryTest extends TestCase
             ->willReturn($returnValue);
     }
 
+    private function stubItemPropertyValues(array $valueMap): void
+    {
+        $this->propertyOperator
+            ->expects($this->any())
+            ->method('getPropertyValue')
+            ->willReturnMap($valueMap);
+    }
+
     private function expectSetNamedItem(string $name, $item): void
     {
         $this->dataStorage
@@ -94,6 +125,15 @@ class DataRepositoryTest extends TestCase
             ->with($name);
     }
 
+    private function expectIterateMatchingItemsReturns(array $criteria, array $result): void
+    {
+        $this->propertyOperator
+            ->expects($this->once())
+            ->method('getItemsWithMatchingCriteria')
+            ->with($this->allItems, $criteria)
+            ->willReturn(new \ArrayIterator($result));
+    }
+
     /**
      * @test
      */
@@ -102,9 +142,9 @@ class DataRepositoryTest extends TestCase
         $this->dataStorage
             ->expects($this->once())
             ->method('addItem')
-            ->with($this->identicalTo($this->testItem));
+            ->with($this->identicalTo($this->item1));
 
-        $this->dataRepository->addItem($this->testItem);
+        $this->dataRepository->addItem($this->item1);
     }
 
     /**
@@ -116,10 +156,10 @@ class DataRepositoryTest extends TestCase
         $this->dataStorage
             ->expects($this->once())
             ->method('containsItem')
-            ->with($this->identicalTo($this->testItem))
+            ->with($this->identicalTo($this->item1))
             ->willReturn($dataStorageReturnValue);
 
-        $returnValue = $this->dataRepository->containsItem($this->testItem);
+        $returnValue = $this->dataRepository->containsItem($this->item1);
         $this->assertEquals($dataStorageReturnValue, $returnValue);
     }
 
@@ -136,7 +176,7 @@ class DataRepositoryTest extends TestCase
      */
     public function getAllItems_dataStorageHoldsItems_returnItemsFromDataStorage(): void
     {
-        $allItems = [$this->testItem];
+        $allItems = [$this->item1];
         $this->stubGetAllItemsReturns($allItems);
 
         $returnValue = $this->dataRepository->getAllItems();
@@ -151,9 +191,9 @@ class DataRepositoryTest extends TestCase
         $this->dataStorage
             ->expects($this->once())
             ->method('removeItem')
-            ->with($this->identicalTo($this->testItem));
+            ->with($this->identicalTo($this->item1));
 
-        $this->dataRepository->removeItem($this->testItem);
+        $this->dataRepository->removeItem($this->item1);
     }
 
     /**
@@ -165,7 +205,7 @@ class DataRepositoryTest extends TestCase
         $this->stubContainsItemReturns(false);
 
         $this->expectException(ItemNotFoundException::class);
-        $this->dataRepository->removeItem($this->testItem);
+        $this->dataRepository->removeItem($this->item1);
     }
 
     /**
@@ -176,7 +216,7 @@ class DataRepositoryTest extends TestCase
         $this->configureRepositoryStrictRemove();
         $this->stubContainsItemReturns(true);
 
-        $this->dataRepository->removeItem($this->testItem);
+        $this->dataRepository->removeItem($this->item1);
         $this->expectNotToPerformAssertions();
     }
 
@@ -185,8 +225,8 @@ class DataRepositoryTest extends TestCase
      */
     public function setNamedItem_addOneNamedItem_setNamedItem(): void
     {
-        $this->expectSetNamedItem('name', $this->testItem);
-        $this->dataRepository->setNamedItem('name', $this->testItem);
+        $this->expectSetNamedItem('name', $this->item1);
+        $this->dataRepository->setNamedItem('name', $this->item1);
     }
 
     /**
@@ -222,10 +262,10 @@ class DataRepositoryTest extends TestCase
             ->expects($this->once())
             ->method('getNamedItem')
             ->with('name')
-            ->willReturn($this->testItem);
+            ->willReturn($this->item1);
 
         $returnValue = $this->dataRepository->getNamedItem('name');
-        $this->assertSame($this->testItem, $returnValue);
+        $this->assertSame($this->item1, $returnValue);
     }
 
     /**
@@ -256,8 +296,8 @@ class DataRepositoryTest extends TestCase
      */
     public function replaceNamedItem_scriptUpdateOptionDisabled_setNamedItemAnyways(): void
     {
-        $this->expectSetNamedItem('name', $this->testItem);
-        $this->dataRepository->replaceNamedItem('name', $this->testItem);
+        $this->expectSetNamedItem('name', $this->item1);
+        $this->dataRepository->replaceNamedItem('name', $this->item1);
     }
 
     /**
@@ -273,8 +313,8 @@ class DataRepositoryTest extends TestCase
             ->with('name')
             ->willReturn(true);
 
-        $this->expectSetNamedItem('name', $this->testItem);
-        $this->dataRepository->replaceNamedItem('name', $this->testItem);
+        $this->expectSetNamedItem('name', $this->item1);
+        $this->dataRepository->replaceNamedItem('name', $this->item1);
     }
 
     /**
@@ -295,7 +335,7 @@ class DataRepositoryTest extends TestCase
             ->method('setNamedItem');
 
         $this->expectException(NamedItemNotFoundException::class);
-        $this->dataRepository->replaceNamedItem('name', $this->testItem);
+        $this->dataRepository->replaceNamedItem('name', $this->item1);
     }
 
     /**
@@ -348,23 +388,171 @@ class DataRepositoryTest extends TestCase
     /**
      * @test
      */
-    public function sortItemsByPropertyValue_sortAscending_returnCorrectOrder(): void
+    public function getAllItemsByCriteria_multipleMatchingItems_returnAllItems(): void
     {
-        $item1 = new \stdClass();
-        $item2 = new \stdClass();
-        $item3 = new \stdClass();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $returnValue = $this->dataRepository->getAllItemsByCriteria(['property' => 'value']);
+        $this->assertEquals([$this->item1, $this->item2], $returnValue);
+    }
+
+    /**
+     * @test
+     */
+    public function getOneItemByCriteria_multipleMatchingItems_returnFirstItem(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $returnValue = $this->dataRepository->getOneItemByCriteria(['property' => 'value']);
+        $this->assertSame($this->item1, $returnValue);
+    }
+
+    /**
+     * @test
+     */
+    public function getOneItemByCriteria_noMatchingItem_returnNull(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $returnValue = $this->dataRepository->getOneItemByCriteria(['property' => 'value']);
+        $this->assertNull($returnValue);
+    }
+
+    /**
+     * @test
+     */
+    public function getOneItemByCriteria_strictGetOptionNoMatchingItem_throwItemNotFoundException(): void
+    {
+        $this->configureRepositoryStrictGet();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $this->expectException(ItemNotFoundException::class);
+        $this->dataRepository->getOneItemByCriteria(['property' => 'value']);
+    }
+
+    /**
+     * @test
+     */
+    public function updateAllItemsByCriteria_multipleMatchingItems_setPropertyValues(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
 
         $this->propertyOperator
-            ->expects($this->any())
-            ->method('getPropertyValue')
-            ->willReturnMap([
-                [$item1, 'property', 1],
-                [$item2, 'property', 2],
-                [$item3, 'property', 3],
-            ]);
+            ->expects($this->exactly(4))
+            ->method('setPropertyValue')
+            ->withConsecutive(
+                [$this->item1, 'change1', 'value1'],
+                [$this->item1, 'change2', 'value2'],
+                [$this->item2, 'change1', 'value1'],
+                [$this->item2, 'change2', 'value2']
+            )
+            ->willReturnArgument(0);
 
-        $list = [$item2, $item1, $item3];
-        $expectedList = [$item1, $item2, $item3];
+        $this->dataRepository->updateAllItemsByCriteria(['property' => 'value'], ['change1' => 'value1', 'change2' => 'value2']);
+    }
+
+    /**
+     * @test
+     */
+    public function updateOneByCriteria_multipleMatches_updateFirstItem(): void
+    {
+        $this->configureRepositoryStrictUpdate();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->propertyOperator
+            ->expects($this->exactly(2))
+            ->method('setPropertyValue')
+            ->withConsecutive(
+                [$this->item1, 'change1', 'value1'],
+                [$this->item1, 'change2', 'value2']
+            )
+            ->willReturnArgument(0);
+
+        $this->dataRepository->updateOneByCriteria(['property' => 'value'], ['change1' => 'value1', 'change2' => 'value2']);
+    }
+
+    /**
+     * @test
+     */
+    public function updateOneByCriteria_strictUpdateOptionNoMatchingItem_throwItemNotFoundException(): void
+    {
+        $this->configureRepositoryStrictUpdate();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $this->expectException(ItemNotFoundException::class);
+        $this->dataRepository->updateOneByCriteria(['property' => 'value'], ['change1' => 'value1', 'change2' => 'value2']);
+    }
+
+    /**
+     * @test
+     */
+    public function removeAllItemsByCriteria_multipleMatches_removeAllItems(): void
+    {
+        $this->configureRepositoryStrictRemove();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->dataStorage
+            ->expects($this->exactly(2))
+            ->method('removeItem')
+            ->withConsecutive(
+                $this->item1,
+                $this->item2
+            );
+
+        $this->dataRepository->removeAllItemsByCriteria(['property' => 'value']);
+    }
+
+    /**
+     * @test
+     */
+    public function removeOneItemByCriteria_multipleMatches_removeFirstItem(): void
+    {
+        $this->configureRepositoryStrictRemove();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->dataStorage
+            ->expects($this->once())
+            ->method('removeItem')
+            ->with($this->item1);
+
+        $this->dataRepository->removeOneItemByCriteria(['property' => 'value']);
+    }
+
+    /**
+     * @test
+     */
+    public function removeOneItemByCriteria_strictRemoveOptionNoMatchingItem_throwItemNotFoundException(): void
+    {
+        $this->configureRepositoryStrictRemove();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $this->expectException(ItemNotFoundException::class);
+        $this->dataRepository->removeOneItemByCriteria(['property' => 'value']);
+    }
+
+    /**
+     * @test
+     */
+    public function sortItemsByPropertyValue_sortAscending_returnCorrectOrder(): void
+    {
+        $this->stubItemPropertyValues([
+            [$this->item1, 'property', 1],
+            [$this->item2, 'property', 2],
+            [$this->item3, 'property', 3],
+        ]);
+
+        $list = [$this->item2, $this->item1, $this->item3];
+        $expectedList = [$this->item1, $this->item2, $this->item3];
 
         $returnedList = $this->dataRepository->sortItemsByPropertyValue($list, 'property', DataRepository::SORT_ORDER_ASC);
         $this->assertEquals($expectedList, $returnedList);
@@ -375,21 +563,14 @@ class DataRepositoryTest extends TestCase
      */
     public function sortItemsByPropertyValue_sortDescending_returnCorrectOrder(): void
     {
-        $item1 = new \stdClass();
-        $item2 = new \stdClass();
-        $item3 = new \stdClass();
+        $this->stubItemPropertyValues([
+            [$this->item1, 'property', 1],
+            [$this->item2, 'property', 2],
+            [$this->item3, 'property', 3],
+        ]);
 
-        $this->propertyOperator
-            ->expects($this->any())
-            ->method('getPropertyValue')
-            ->willReturnMap([
-                [$item1, 'property', 1],
-                [$item2, 'property', 2],
-                [$item3, 'property', 3],
-            ]);
-
-        $list = [$item2, $item1, $item3];
-        $expectedList = [$item3, $item2, $item1];
+        $list = [$this->item2, $this->item1, $this->item3];
+        $expectedList = [$this->item3, $this->item2, $this->item1];
 
         $returnedList = $this->dataRepository->sortItemsByPropertyValue($list, 'property', DataRepository::SORT_ORDER_DESC);
         $this->assertEquals($expectedList, $returnedList);

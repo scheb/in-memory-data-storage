@@ -121,6 +121,68 @@ class DataRepository
         $this->dataStorage->removeNamedItem($name);
     }
 
+    public function getAllItemsByCriteria(array $criteria): array
+    {
+        return iterator_to_array($this->iterateMatchingItems($criteria), false);
+    }
+
+    public function getOneItemByCriteria(array $criteria)
+    {
+        foreach ($this->iterateMatchingItems($criteria) as $item) {
+            return $item;
+        }
+
+        if ($this->strictGet) {
+            throw new ItemNotFoundException('Cannot find item with matching criteria.');
+        }
+
+        return null;
+    }
+
+    public function updateAllItemsByCriteria(array $criteria, array $propertyUpdates): void
+    {
+        foreach ($this->iterateMatchingItems($criteria) as $matchedItem) {
+            foreach ($propertyUpdates as $propertyName => $newValue) {
+                $this->propertyOperator->setPropertyValue($matchedItem, $propertyName, $newValue);
+            }
+        }
+    }
+
+    public function updateOneByCriteria(array $criteria, array $propertyUpdates): void
+    {
+        foreach ($this->iterateMatchingItems($criteria) as $matchedItem) {
+            foreach ($propertyUpdates as $propertyName => $newValue) {
+                $this->propertyOperator->setPropertyValue($matchedItem, $propertyName, $newValue);
+            }
+
+            return;
+        }
+
+        if ($this->strictUpdate) {
+            throw new ItemNotFoundException('Cannot find item with matching criteria.');
+        }
+    }
+
+    public function removeAllItemsByCriteria(array $criteria): void
+    {
+        foreach ($this->iterateMatchingItems($criteria) as $matchedItem) {
+            $this->dataStorage->removeItem($matchedItem);
+        }
+    }
+
+    public function removeOneItemByCriteria(array $criteria): void
+    {
+        foreach ($this->iterateMatchingItems($criteria) as $matchedItem) {
+            $this->dataStorage->removeItem($matchedItem);
+
+            return;
+        }
+
+        if ($this->strictRemove) {
+            throw new ItemNotFoundException('Cannot find item with matching criteria.');
+        }
+    }
+
     public function sortItemsByPropertyValue(array $items, string $propertyName, int $order = self::SORT_ORDER_ASC): array
     {
         if (self::SORT_ORDER_DESC === $order) {
@@ -134,5 +196,10 @@ class DataRepository
         }
 
         return $items;
+    }
+
+    private function iterateMatchingItems(array $criteria): \Traversable
+    {
+        return $this->propertyOperator->getItemsWithMatchingCriteria($this->dataStorage->getAllItems(), $criteria);
     }
 }
