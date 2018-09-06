@@ -21,6 +21,14 @@ interface DataStorageInterface
     public function containsItem($item): bool;
 
     /**
+     * Replace an item with a different item.
+     *
+     * @param mixed $item
+     * @param mixed $newItem
+     */
+    public function replaceItem($item, $newItem): void;
+
+    /**
      * Remove a specific item from the data storage.
      *
      * @param mixed $item

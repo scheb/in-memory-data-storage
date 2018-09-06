@@ -113,6 +113,18 @@ class DataRepositoryIntegrationTest extends TestCase
     /**
      * @test
      */
+    public function updateOneByCriteria_modifyArrayItem_arrayItemWasReplacedInDataStore()
+    {
+        $this->dataRepository->addItem(['key' => 'value']);
+        $this->dataRepository->updateOneByCriteria(['key' => 'value'], ['key' => 'newValue']);
+
+        $allItems = $this->dataRepository->getAllItems();
+        $this->assertEquals([['key' => 'newValue']], $allItems);
+    }
+
+    /**
+     * @test
+     */
     public function sortItemsByPropertyValue_sortAscending_returnCorrectOrder(): void
     {
         $item1 = $this->createPropertyObject(['property' => 1]);

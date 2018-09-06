@@ -16,6 +16,14 @@ class ArrayDataStorage implements DataStorageInterface
         return in_array($item, $this->items, true);
     }
 
+    public function replaceItem($item, $newItem): void
+    {
+        $key = array_search($item, $this->items, true);
+        if (false !== $key) {
+            $this->items[$key] = $newItem;
+        }
+    }
+
     public function removeItem($item): void
     {
         $key = array_search($item, $this->items, true);

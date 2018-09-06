@@ -143,7 +143,7 @@ class DataRepository
     {
         foreach ($this->iterateMatchingItems($criteria) as $matchedItem) {
             foreach ($propertyUpdates as $propertyName => $newValue) {
-                $this->propertyOperator->setPropertyValue($matchedItem, $propertyName, $newValue);
+                $this->updatePropertyValue($matchedItem, $propertyName, $newValue);
             }
         }
     }
@@ -152,7 +152,7 @@ class DataRepository
     {
         foreach ($this->iterateMatchingItems($criteria) as $matchedItem) {
             foreach ($propertyUpdates as $propertyName => $newValue) {
-                $this->propertyOperator->setPropertyValue($matchedItem, $propertyName, $newValue);
+                $this->updatePropertyValue($matchedItem, $propertyName, $newValue);
             }
 
             return;
@@ -160,6 +160,16 @@ class DataRepository
 
         if ($this->strictUpdate) {
             throw new ItemNotFoundException('Cannot find item with matching criteria.');
+        }
+    }
+
+    private function updatePropertyValue($matchedItem, string $propertyName, $newValue): void
+    {
+        $modifiedItem = $this->propertyOperator->setPropertyValue($matchedItem, $propertyName, $newValue);
+
+        // When the item identity changes after update (e.g. when it's array), replace the item in the data store
+        if ($modifiedItem !== $matchedItem) {
+            $this->dataStorage->replaceItem($matchedItem, $modifiedItem);
         }
     }
 

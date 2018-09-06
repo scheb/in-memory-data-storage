@@ -77,6 +77,39 @@ class ArrayDataStorageTest extends TestCase
     /**
      * @test
      */
+    public function replaceItem_replaceExistingItem_exchangeItem(): void
+    {
+        $item1 = new \stdClass();
+        $item2 = new \stdClass();
+        $this->dataStorage->addItem($item1);
+        $this->dataStorage->replaceItem($item1, $item2);
+
+        $this->assertFalse($this->dataStorage->containsItem($item1));
+        $this->assertTrue($this->dataStorage->containsItem($item2));
+
+        $allItems = $this->dataStorage->getAllItems();
+        $this->assertCount(1, $allItems);
+        $this->assertContains($item2, $allItems);
+    }
+
+    /**
+     * @test
+     */
+    public function replaceItem_replaceNamedItem_keepName(): void
+    {
+        $item1 = new \stdClass();
+        $item2 = new \stdClass();
+        $this->dataStorage->setNamedItem('test', $item1);
+        $this->dataStorage->replaceItem($item1, $item2);
+
+        $this->assertTrue($this->dataStorage->namedItemExists('test'));
+        $returnValue = $this->dataStorage->getNamedItem('test');
+        $this->assertSame($item2, $returnValue);
+    }
+
+    /**
+     * @test
+     */
     public function removeItem_removeExistingItem_itemRemovedFromDataStorage(): void
     {
         $item = new \stdClass();
