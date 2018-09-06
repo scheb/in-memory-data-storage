@@ -24,6 +24,16 @@ class DataRepositoryIntegrationTest extends TestCase
         $this->bar = new \stdClass();
     }
 
+    private function createPropertyObject(array $properties = []): \stdClass
+    {
+        $item = new \stdClass();
+        foreach ($properties as $key => $value) {
+            $item->{$key} = $value;
+        }
+
+        return $item;
+    }
+
     /**
      * @test
      */
@@ -98,5 +108,41 @@ class DataRepositoryIntegrationTest extends TestCase
         $this->assertFalse($this->dataRepository->containsItem($this->bar));
         $this->assertFalse($this->dataRepository->namedItemExists(self::ITEM_NAME));
         $this->assertCount(0, $this->dataRepository->getAllItems());
+    }
+
+    /**
+     * @test
+     */
+    public function sortItemsByPropertyValue_sortAscending_returnCorrectOrder(): void
+    {
+        $item1 = $this->createPropertyObject(['property' => 1]);
+        $item2 = $this->createPropertyObject(['property' => 2]);
+        $item3 = $this->createPropertyObject(['property' => 3]);
+        $itemNull = $this->createPropertyObject(['property' => null]);
+        $itemEmpty = $this->createPropertyObject([]);
+
+        $list = [$itemNull, $item2, $item1, $item3, $itemEmpty];
+        $expectedList = [$itemNull, $itemEmpty, $item1, $item2, $item3];
+
+        $returnedList = $this->dataRepository->sortItemsByPropertyValue($list, 'property', DataRepository::SORT_ORDER_ASC);
+        $this->assertEquals($expectedList, $returnedList);
+    }
+
+    /**
+     * @test
+     */
+    public function sortItemsByPropertyValue_sortDescending_returnCorrectOrder(): void
+    {
+        $item1 = $this->createPropertyObject(['property' => 1]);
+        $item2 = $this->createPropertyObject(['property' => 2]);
+        $item3 = $this->createPropertyObject(['property' => 3]);
+        $itemNull = $this->createPropertyObject(['property' => null]);
+        $itemEmpty = $this->createPropertyObject([]);
+
+        $list = [$itemNull, $item2, $item1, $item3, $itemEmpty];
+        $expectedList = [$item3, $item2, $item1, $itemNull, $itemEmpty];
+
+        $returnedList = $this->dataRepository->sortItemsByPropertyValue($list, 'property', DataRepository::SORT_ORDER_DESC);
+        $this->assertEquals($expectedList, $returnedList);
     }
 }

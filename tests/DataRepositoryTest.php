@@ -344,4 +344,54 @@ class DataRepositoryTest extends TestCase
         $this->expectException(NamedItemNotFoundException::class);
         $this->dataRepository->removeNamedItem('name');
     }
+
+    /**
+     * @test
+     */
+    public function sortItemsByPropertyValue_sortAscending_returnCorrectOrder(): void
+    {
+        $item1 = new \stdClass();
+        $item2 = new \stdClass();
+        $item3 = new \stdClass();
+
+        $this->propertyOperator
+            ->expects($this->any())
+            ->method('getPropertyValue')
+            ->willReturnMap([
+                [$item1, 'property', 1],
+                [$item2, 'property', 2],
+                [$item3, 'property', 3],
+            ]);
+
+        $list = [$item2, $item1, $item3];
+        $expectedList = [$item1, $item2, $item3];
+
+        $returnedList = $this->dataRepository->sortItemsByPropertyValue($list, 'property', DataRepository::SORT_ORDER_ASC);
+        $this->assertEquals($expectedList, $returnedList);
+    }
+
+    /**
+     * @test
+     */
+    public function sortItemsByPropertyValue_sortDescending_returnCorrectOrder(): void
+    {
+        $item1 = new \stdClass();
+        $item2 = new \stdClass();
+        $item3 = new \stdClass();
+
+        $this->propertyOperator
+            ->expects($this->any())
+            ->method('getPropertyValue')
+            ->willReturnMap([
+                [$item1, 'property', 1],
+                [$item2, 'property', 2],
+                [$item3, 'property', 3],
+            ]);
+
+        $list = [$item2, $item1, $item3];
+        $expectedList = [$item3, $item2, $item1];
+
+        $returnedList = $this->dataRepository->sortItemsByPropertyValue($list, 'property', DataRepository::SORT_ORDER_DESC);
+        $this->assertEquals($expectedList, $returnedList);
+    }
 }

@@ -120,4 +120,19 @@ class DataRepository
 
         $this->dataStorage->removeNamedItem($name);
     }
+
+    public function sortItemsByPropertyValue(array $items, string $propertyName, int $order = self::SORT_ORDER_ASC): array
+    {
+        if (self::SORT_ORDER_DESC === $order) {
+            usort($items, function ($a, $b) use ($propertyName) {
+                return $this->propertyOperator->getPropertyValue($b, $propertyName) <=> $this->propertyOperator->getPropertyValue($a, $propertyName);
+            });
+        } else {
+            usort($items, function ($a, $b) use ($propertyName) {
+                return $this->propertyOperator->getPropertyValue($a, $propertyName) <=> $this->propertyOperator->getPropertyValue($b, $propertyName);
+            });
+        }
+
+        return $items;
+    }
 }
