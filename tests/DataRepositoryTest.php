@@ -543,6 +543,161 @@ class DataRepositoryTest extends TestCase
     /**
      * @test
      */
+    public function getAllItemsByPropertyValue_multipleMatchingItems_returnAllItems(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $returnValue = $this->dataRepository->getAllItemsByPropertyValue('property', 'value');
+        $this->assertEquals([$this->item1, $this->item2], $returnValue);
+    }
+
+    /**
+     * @test
+     */
+    public function getOneItemByPropertyValue_multipleMatchingItems_returnFirstItem(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $returnValue = $this->dataRepository->getOneItemByPropertyValue('property', 'value');
+        $this->assertSame($this->item1, $returnValue);
+    }
+
+    /**
+     * @test
+     */
+    public function getOneItemByPropertyValue_noMatchingItem_returnNull(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $returnValue = $this->dataRepository->getOneItemByPropertyValue('property', 'value');
+        $this->assertNull($returnValue);
+    }
+
+    /**
+     * @test
+     */
+    public function getOneItemByPropertyValue_strictGetOptionNoMatchingItem_throwItemNotFoundException(): void
+    {
+        $this->configureRepositoryStrictGet();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $this->expectException(ItemNotFoundException::class);
+        $this->dataRepository->getOneItemByPropertyValue('property', 'value');
+    }
+
+    /**
+     * @test
+     */
+    public function updateAllItemsByPropertyValue_multipleMatchingItems_setPropertyValues(): void
+    {
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->propertyOperator
+            ->expects($this->exactly(4))
+            ->method('setPropertyValue')
+            ->withConsecutive(
+                [$this->item1, 'change1', 'value1'],
+                [$this->item1, 'change2', 'value2'],
+                [$this->item2, 'change1', 'value1'],
+                [$this->item2, 'change2', 'value2']
+            )
+            ->willReturnArgument(0);
+
+        $this->dataRepository->updateAllItemsByPropertyValue('property', 'value', ['change1' => 'value1', 'change2' => 'value2']);
+    }
+
+    /**
+     * @test
+     */
+    public function updateOneByPropertyValue_multipleMatches_updateFirstItem(): void
+    {
+        $this->configureRepositoryStrictUpdate();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->propertyOperator
+            ->expects($this->exactly(2))
+            ->method('setPropertyValue')
+            ->withConsecutive(
+                [$this->item1, 'change1', 'value1'],
+                [$this->item1, 'change2', 'value2']
+            )
+            ->willReturnArgument(0);
+
+        $this->dataRepository->updateOneByPropertyValue('property', 'value', ['change1' => 'value1', 'change2' => 'value2']);
+    }
+
+    /**
+     * @test
+     */
+    public function updateOneByPropertyValue_strictUpdateOptionNoMatchingItem_throwItemNotFoundException(): void
+    {
+        $this->configureRepositoryStrictUpdate();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $this->expectException(ItemNotFoundException::class);
+        $this->dataRepository->updateOneByPropertyValue('property', 'value', ['change1' => 'value1', 'change2' => 'value2']);
+    }
+
+    /**
+     * @test
+     */
+    public function removeAllItemsByPropertyValue_multipleMatches_removeAllItems(): void
+    {
+        $this->configureRepositoryStrictRemove();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->dataStorage
+            ->expects($this->exactly(2))
+            ->method('removeItem')
+            ->withConsecutive(
+                $this->item1,
+                $this->item2
+            );
+
+        $this->dataRepository->removeAllItemsByPropertyValue('property', 'value');
+    }
+
+    /**
+     * @test
+     */
+    public function removeOneItemByPropertyValue_multipleMatches_removeFirstItem(): void
+    {
+        $this->configureRepositoryStrictRemove();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], [$this->item1, $this->item2]);
+
+        $this->dataStorage
+            ->expects($this->once())
+            ->method('removeItem')
+            ->with($this->item1);
+
+        $this->dataRepository->removeOneItemByPropertyValue('property', 'value');
+    }
+
+    /**
+     * @test
+     */
+    public function removeOneItemByPropertyValue_strictRemoveOptionNoMatchingItem_throwItemNotFoundException(): void
+    {
+        $this->configureRepositoryStrictRemove();
+        $this->stubGetAllItemsReturnsItems123();
+        $this->expectIterateMatchingItemsReturns(['property' => 'value'], []);
+
+        $this->expectException(ItemNotFoundException::class);
+        $this->dataRepository->removeOneItemByPropertyValue('property', 'value');
+    }
+
+    /**
+     * @test
+     */
     public function sortItemsByPropertyValue_sortAscending_returnCorrectOrder(): void
     {
         $this->stubItemPropertyValues([

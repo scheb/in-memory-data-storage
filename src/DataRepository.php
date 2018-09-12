@@ -193,6 +193,36 @@ class DataRepository
         }
     }
 
+    public function getAllItemsByPropertyValue(string $propertyName, $value): array
+    {
+        return $this->getAllItemsByCriteria([$propertyName => $value]);
+    }
+
+    public function getOneItemByPropertyValue(string $propertyName, $value)
+    {
+        return $this->getOneItemByCriteria([$propertyName => $value]);
+    }
+
+    public function updateAllItemsByPropertyValue(string $propertyName, $value, array $propertyUpdates): void
+    {
+        $this->updateAllItemsByCriteria([$propertyName => $value], $propertyUpdates);
+    }
+
+    public function updateOneByPropertyValue(string $propertyName, $value, array $propertyUpdates): void
+    {
+        $this->updateOneByCriteria([$propertyName => $value], $propertyUpdates);
+    }
+
+    public function removeAllItemsByPropertyValue(string $propertyName, $value): void
+    {
+        $this->removeAllItemsByCriteria([$propertyName => $value]);
+    }
+
+    public function removeOneItemByPropertyValue(string $propertyName, $value): void
+    {
+        $this->removeOneItemByCriteria([$propertyName => $value]);
+    }
+
     public function sortItemsByPropertyValue(array $items, string $propertyName, int $order = self::SORT_ORDER_ASC): array
     {
         if (self::SORT_ORDER_DESC === $order) {
