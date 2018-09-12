@@ -1,8 +1,6 @@
 scheb/in-memory-data-storage
 ============================
 
-*** **[WIP]** This library is currently work in progress. Public API might change any time. ***
-
 [![Build Status](https://travis-ci.org/scheb/in-memory-data-storage.svg?branch=master)](https://travis-ci.org/scheb/in-memory-data-storage)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/scheb/in-memory-data-storage/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/scheb/in-memory-data-storage/?branch=master)
 [![Code Coverage](https://scrutinizer-ci.com/g/scheb/in-memory-data-storage/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/scheb/in-memory-data-storage/?branch=master)
