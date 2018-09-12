@@ -4,7 +4,7 @@ require __DIR__.'/../vendor/autoload.php';
 
 use Scheb\InMemoryDataStorage\DataRepositoryBuilder;
 use Scheb\InMemoryDataStorage\DataStorage\ArrayDataStorage;
-use function \Scheb\InMemoryDataStorage\Repository\compare;
+use function Scheb\InMemoryDataStorage\Repository\compare;
 
 $foo = 'I am foo';
 $bar = 'I am bar';
@@ -13,7 +13,6 @@ $repositoryBuilder = new DataRepositoryBuilder();
 $repository = $repositoryBuilder
 //  ->setDataStorage(new ArrayDataStorage())
     ->build();
-
 
 // Simple CRUD
 $repository->addItem($foo);
@@ -29,7 +28,6 @@ $repository->replaceNamedItem('foo', $bar);
 $repository->getNamedItem('foo'); // returns $bar
 $repository->removeNamedItem('foo');
 
-
 // Advanced get
 $repository->getAllItemsByCriteria(['property' => 'value']);
 // $repository->getOneItemByCriteria(...); // The same, but only one item is retrieved
@@ -44,7 +42,6 @@ $repository->updateAllItemsByCriteria(
 // Advanced remove
 $repository->removeAllItemsByCriteria(['property' => 'value']);
 // $repository->removeOneItemByCriteria(...); // The same, but only one item is removed
-
 
 // Comparision functions in matching criteria
 $repository->getAllItemsByCriteria(['property' => compare()->notNull()]);
