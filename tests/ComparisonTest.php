@@ -30,6 +30,49 @@ class ComparisonTest extends TestCase
 
     /**
      * @test
+     */
+    public function not_passComparisionFunction_callComparisionFunctionWithArguments(): void
+    {
+        $this->createValueMatcher();
+
+        $internalCallbackArgs = [];
+        $innerCallback = function () use (&$internalCallbackArgs) {
+            $internalCallbackArgs = func_get_args();
+        };
+        $callback = Comparison::not($innerCallback);
+        $callback(123, $this->valueMatcher);
+
+        $this->assertEquals(123, $internalCallbackArgs[0] ?? null);
+        $this->assertEquals($this->valueMatcher, $internalCallbackArgs[1] ?? null);
+    }
+
+    /**
+     * @test
+     * @dataProvider provideNotValues
+     */
+    public function not_innerCallbackEvaluates_returnReverseBoolean(bool $innerResult, bool $expectedResult): void
+    {
+        $this->createValueMatcher();
+
+        $innerCallback = function () use ($innerResult) {
+            return $innerResult;
+        };
+        $callback = Comparison::not($innerCallback);
+        $result = $callback(123, $this->valueMatcher);
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    public function provideNotValues(): array
+    {
+        return [
+            [true, false],
+            [false, true],
+        ];
+    }
+
+    /**
+     * @test
      * @dataProvider provideIsNullValues
      */
     public function isNull_withValue_returnResult($value, bool $result): void
@@ -55,8 +98,9 @@ class ComparisonTest extends TestCase
      */
     public function notNull_withValue_returnResult($value, bool $result): void
     {
+        $this->createValueMatcher();
         $callback = Comparison::notNull();
-        $this->assertEquals($result, $callback($value));
+        $this->assertEquals($result, $callback($value, $this->valueMatcher));
     }
 
     public function provideNotNullValues(): array

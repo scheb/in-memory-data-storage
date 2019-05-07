@@ -6,6 +6,13 @@ use Scheb\InMemoryDataStorage\Matching\ValueMatcherInterface;
 
 class Comparison
 {
+    public static function not(callable $callback)
+    {
+        return function ($propertyValue, ValueMatcherInterface $valueMatcher) use ($callback) {
+            return !$callback($propertyValue, $valueMatcher);
+        };
+    }
+
     public static function isNull(): callable
     {
         return function ($propertyValue) {
@@ -15,9 +22,7 @@ class Comparison
 
     public static function notNull(): callable
     {
-        return function ($propertyValue) {
-            return null !== $propertyValue;
-        };
+        return self::not(self::isNull());
     }
 
     public static function equals($referenceValue): callable
